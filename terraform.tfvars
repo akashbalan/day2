@@ -1,0 +1,9 @@
+aws_region = "us-east-1"
+vpc_name = "genai_vpc"
+cidr_block = "10.0.0.0/16"
+public_subnet = ["10.0.1.0/24","10.0.2.0/24"]
+private_subnet = ["10.0.3.0/24","10.0.4.0/24"]
+az = ["us-east-1a","us-east-1b"]
+ingress_value = ["80", "8080", "443", "8443", "3306", "1900","22"]
+ami_id        = "ami-0360c520857e3138f"
+key_name = "terr"
