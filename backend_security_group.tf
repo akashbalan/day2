@@ -10,7 +10,7 @@ resource "aws_security_group" "allow_all" {
       from_port   = ingress.value
       to_port     = ingress.value
       protocol    = "tcp"
-      cidr_blocks = ["0.0.0.0/0"] # Allow traffic from any IP
+      security_groups =  [module.backend_alb.this_security_group_id]
     }
   }
 

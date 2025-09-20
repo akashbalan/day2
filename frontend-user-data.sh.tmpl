@@ -1,0 +1,21 @@
+#!/bin/bash
+sudo apt update -y
+sudo apt install git -y
+sudo apt install python3-pip -y
+
+# Clone repo
+git clone https://github.com/akashbalan/frontend.git
+cd frontend
+
+# Optional: venv
+python3 -m venv venv
+source venv/bin/activate
+
+# Install dependencies
+pip install streamlit requests
+
+# Inject backend ALB DNS
+echo "BACKEND_URL=http://${backend_alb_dns}" > .env
+
+# Run Streamlit app in background
+nohup streamlit run frontend.py --server.port 80 --server.address 0.0.0.0 > frontend.log 2>&1 &

@@ -1,4 +1,4 @@
-resource "aws_security_group" "allow_all" {
+resource "aws_security_group" "frontend_allow_all" {
   name        = "${var.vpc_name}-allow-all"
   description = "Allow all Inbound traffic"
   vpc_id      = aws_vpc.main.id
@@ -10,7 +10,7 @@ resource "aws_security_group" "allow_all" {
       from_port   = ingress.value
       to_port     = ingress.value
       protocol    = "tcp"
-      cidr_blocks = ["0.0.0.0/0"] # Allow traffic from any IP
+      security_groups = [module.frontend_alb.this_security_group_id] # Allow traffic from any IP
     }
   }
 

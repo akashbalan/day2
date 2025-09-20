@@ -1,9 +1,9 @@
-module "frontend_alb" {
+module "backend_alb" {
   source = "terraform-aws-modules/alb/aws"
 
-  name    = "frontend_alb"
+  name    = "backend_alb"
   vpc_id  = aws_vpc.genai_vpc.id
-  subnets = aws_subnet.public_subnet.*.id
+  subnets = aws_subnet.private_subnet.*.id
 
   # Security Group
   security_group_ingress_rules = {
@@ -12,14 +12,14 @@ module "frontend_alb" {
       to_port     = 80
       ip_protocol = "tcp"
       description = "HTTP web traffic"
-      cidr_ipv4   = "0.0.0.0/0"
+      referenced_security_group_id  = aws_security_group.frontend_allow_all.id
     }
     all_https = {
       from_port   = 443
       to_port     = 443
       ip_protocol = "tcp"
       description = "HTTPS web traffic"
-      cidr_ipv4   = "0.0.0.0/0"
+      referenced_security_group_id = aws_security_group.frontend_allow_all.id
     }
   }
   security_group_egress_rules = {
@@ -27,7 +27,7 @@ module "frontend_alb" {
       from_port   = "80"
       to_port     = "80"
       ip_protocol = "tcp"
-      referenced_security_group_id = aws_security_group.frontend_allow_all.id
+      referenced_security_group_id = aws_security_group.backend_allow_all.id
       description                  = "Allow ALB to forward traffic to frontend EC2s"
     }
   }
@@ -46,10 +46,10 @@ module "frontend_alb" {
     ex-https = {
       port            = 443
       protocol        = "HTTPS"
-      certificate_arn = aws_acm_certificate_validation.frontend_cert_validation.certificate_arn
+     
 
       forward = {
-        target_group_arn = aws_lb_target_group.frontend_tg.arn
+        target_group_arn = aws_lb_target_group.backend_tg.arn
       }
     }
   }
@@ -61,14 +61,3 @@ module "frontend_alb" {
   }
 }
 
-resource "aws_route53_record" "frontend_alias" {
-  zone_id = data.aws_route53_zone.niduu.zone_id
-  name    = "app.niduu.info"
-  type    = "A"
-
-  alias {
-    name                   = module.front_end_alb.dns_name
-    zone_id                = module.front_end_alb.zone_id
-    evaluate_target_health = true
-  }
-}
