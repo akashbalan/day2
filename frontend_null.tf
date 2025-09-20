@@ -37,7 +37,7 @@ resource "null_resource" "frontend_null" {
       host = element(aws_instance.frontend_ec2.*.private_ip, count.index)
 
       # Bastion
-      bastion_host        = aws_instance.bastion_ec2.*.public_ip
+      bastion_host        = aws_instance.bastion_ec2.public_ip
       bastion_user        = "ubuntu"
       bastion_private_key = file("terr.pem")
     }

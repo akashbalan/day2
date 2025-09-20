@@ -1,8 +1,8 @@
 resource "aws_instance" "bastion_ec2" {
-  ami           = var.ami_id# Ubuntu AMI ID for your region
+  ami           = var.ami_id # Ubuntu AMI ID for your region
   instance_type = "t2.micro"
-  subnet_id     = aws_subnet.public_subnet[0].id  # put in first public subnet
-  key_name      = var.key_name            # same key as backend/frontend
+  subnet_id     = aws_subnet.public_subnet[0].id # put in first public subnet
+  key_name      = var.key_name                   # same key as backend/frontend
 
   associate_public_ip_address = true
 
@@ -16,7 +16,7 @@ resource "aws_instance" "bastion_ec2" {
 # Security group for Bastion
 resource "aws_security_group" "bastion_sg" {
   name   = "bastion-sg"
-  vpc_id = aws_vpc.main.id
+  vpc_id = aws_vpc.genai_vpc.id
 
   ingress {
     from_port   = 22

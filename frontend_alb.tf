@@ -1,7 +1,7 @@
 module "frontend_alb" {
   source = "terraform-aws-modules/alb/aws"
 
-  name    = "frontend_alb"
+  name    = "frontendalb"
   vpc_id  = aws_vpc.genai_vpc.id
   subnets = aws_subnet.public_subnet.*.id
 
@@ -22,13 +22,19 @@ module "frontend_alb" {
       cidr_ipv4   = "0.0.0.0/0"
     }
   }
+  # security_group_egress_rules = {
+  #   allow_to_frontend_ec2 = {
+  #     from_port                    = "80"
+  #     to_port                      = "80"
+  #     ip_protocol                  = "tcp"
+  #     referenced_security_group_id = aws_security_group.frontend_allow_all.id
+  #     description                  = "Allow ALB to forward traffic to frontend EC2s"
+  #   }
+  # }
   security_group_egress_rules = {
-    allow_to_frontend_ec2  = {
-      from_port   = "80"
-      to_port     = "80"
-      ip_protocol = "tcp"
-      referenced_security_group_id = aws_security_group.frontend_allow_all.id
-      description                  = "Allow ALB to forward traffic to frontend EC2s"
+    all = {
+      ip_protocol = "-1"
+      cidr_ipv4   = "10.0.0.0/16"
     }
   }
 
@@ -67,8 +73,8 @@ resource "aws_route53_record" "frontend_alias" {
   type    = "A"
 
   alias {
-    name                   = module.front_end_alb.dns_name
-    zone_id                = module.front_end_alb.zone_id
+    name                   = module.frontend_alb.dns_name
+    zone_id                = module.frontend_alb.zone_id
     evaluate_target_health = true
   }
 }

@@ -1,9 +1,9 @@
 resource "aws_eip" "nat_ip" {
-  count = length(var.public_subnet)
+  #count = length(var.public_subnet)
 
- 
+
 
   tags = {
-    Name = "NAT EIP ${count.index}"
+    Name = "NAT EIP "
   }
 }
